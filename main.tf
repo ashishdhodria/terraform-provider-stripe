@@ -12,7 +12,7 @@ provider "stripe" {
 }
 
 data "stripe_user" "user" {
-  email = "ashishdhodria1999@gmail.com"
+  email = ""
 }
 
 output "user" {
