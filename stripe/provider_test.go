@@ -11,7 +11,7 @@ var testAccProviders map[string]*schema.Provider
 var testAccProvider *schema.Provider
 
 func init() {
-	token := "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"
+	token := ""
 	os.Setenv("STRIPE_TOKEN", token)
 	testAccProvider = Provider()
 	testAccProviders = map[string]*schema.Provider{
