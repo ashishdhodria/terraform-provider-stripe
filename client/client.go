@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/account"
@@ -45,7 +46,10 @@ func (c *Client) NewItem(params *stripe.AccountParams) (*stripe.Account, error) 
 	Id := c.GetUserId(*params.Email)
 	if len(Id) == 0 {
 		user, err := account.New(params)
-		log.Printf("[Create Error]: %s", ShowError(err))
+		if err != nil {
+			log.Printf("[Create Error]: %s", ShowError(err))
+			return nil, err
+		}
 		return user, err
 	}
 	return nil, fmt.Errorf("user already exists")
@@ -54,32 +58,60 @@ func (c *Client) NewItem(params *stripe.AccountParams) (*stripe.Account, error) 
 func (c *Client) GetItem(Email string) (*stripe.Account, error) {
 	stripe.Key = c.authToken
 	Id := c.GetUserId(Email)
+	if len(Id) == 0 {
+		return nil, fmt.Errorf("user does not exist")
+	}
 	user, err := account.GetByID(
 		Id,
 		nil,
 	)
-	log.Printf("[Read Error]: %s", ShowError(err))
+	if err != nil {
+		log.Printf("[Read Error]: %s", ShowError(err))
+		return nil, err
+	}
 	return user, err
 }
 
 func (c *Client) UpdateItem(params *stripe.AccountParams, Email string) (*stripe.Account, error) {
 	stripe.Key = c.authToken
 	Id := c.GetUserId(Email)
+	if len(Id) == 0 {
+		return nil, fmt.Errorf("user does not exist")
+	}
 	user, err := account.Update(
 		Id,
 		params,
 	)
-	log.Printf("[Update Error]: %s", ShowError(err))
+	if err != nil {
+		log.Printf("[Update Error]: %s", ShowError(err))
+		return nil, err
+	}
 	return user, err
 }
 
 func (c *Client) DeleteItem(Email string) (*stripe.Account, error) {
 	stripe.Key = c.authToken
 	Id := c.GetUserId(Email)
+	if len(Id) == 0 {
+		return nil, fmt.Errorf("user does not exist")
+	}
 	user, err := account.Del(Id, nil)
-	log.Printf("[Delete Error]: %s", ShowError(err))
-
+	if err != nil {
+		log.Printf("[Delete Error]: %s", ShowError(err))
+		return nil, err
+	}
 	return user, err
+}
+
+func (c *Client) IsRetry(err error) bool {
+	if err != nil {
+		if stripeErr, ok := err.(*stripe.RateLimitError); ok {
+			if strings.Contains(stripeErr.Error(), "429") {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (c *Client) GetUserId(Email string) string {

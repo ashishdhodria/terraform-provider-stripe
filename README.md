@@ -97,7 +97,7 @@ terraform {
 }
 
 provider "stripe" {
-  token = "[Secret Key]"
+  secretkey = "[Secret Key]"
 }
 
 

@@ -2,7 +2,12 @@ package stripe
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"terraform-provider-stripe/client"
+	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -16,10 +21,6 @@ func resourceUser() *schema.Resource {
 		UpdateContext: resourceUserUpdate,
 		DeleteContext: resourceUserDelete,
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 			"email": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
@@ -34,13 +35,12 @@ func resourceUser() *schema.Resource {
 			},
 		},
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			State: resourceUserImporter,
 		},
 	}
 }
 
 func setData(user *stripe.Account, data *schema.ResourceData) {
-	data.Set("id", user.Email)
 	data.Set("email", user.Individual.Email)
 	data.Set("first_name", user.Individual.FirstName)
 	data.Set("last_name", user.Individual.LastName)
@@ -69,11 +69,27 @@ func resourceUserCreate(ctx context.Context, data *schema.ResourceData, i interf
 			LastName:  stripe.String(data.Get("last_name").(string)),
 		},
 	}
-	user, err := apiClient.NewItem(params)
+
+	var err error
+	retryErr := resource.Retry(2*time.Minute, func() *resource.RetryError {
+		user, err := apiClient.NewItem(params)
+		if err != nil {
+			if apiClient.IsRetry(err) {
+				return resource.RetryableError(err)
+			}
+			return resource.NonRetryableError(err)
+		}
+		setData(user, data)
+		return nil
+	})
+	if retryErr != nil {
+		time.Sleep(2 * time.Second)
+		return diag.FromErr(retryErr)
+	}
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	setData(user, data)
+	data.SetId(*params.Email)
 	return diags
 }
 
@@ -81,11 +97,24 @@ func resourceUserRead(ctx context.Context, data *schema.ResourceData, i interfac
 	var diags diag.Diagnostics
 	apiClient := i.(*client.Client)
 	Email := data.Id()
-	user, err := apiClient.GetItem(Email)
-	if err != nil {
-		return diag.FromErr(err)
+	retryErr := resource.Retry(2*time.Minute, func() *resource.RetryError {
+		user, err := apiClient.GetItem(Email)
+		if err != nil {
+			if apiClient.IsRetry(err) {
+				return resource.RetryableError(err)
+			}
+			return resource.NonRetryableError(err)
+		}
+		setData(user, data)
+		return nil
+	})
+	if retryErr != nil {
+		if strings.Contains(retryErr.Error(), "user does not exist") {
+			data.SetId("")
+			return diags
+		}
+		return diag.FromErr(retryErr)
 	}
-	setData(user, data)
 	return diags
 }
 
@@ -108,11 +137,25 @@ func resourceUserUpdate(ctx context.Context, data *schema.ResourceData, i interf
 		return diags
 	}
 	if data.HasChanges("first_name") || data.HasChange("last_name") {
-		user, err := apiClient.UpdateItem(params, Email)
+		var err error
+		retryErr := resource.Retry(2*time.Minute, func() *resource.RetryError {
+			user, err := apiClient.UpdateItem(params, Email)
+			if err != nil {
+				if apiClient.IsRetry(err) {
+					return resource.RetryableError(err)
+				}
+				return resource.NonRetryableError(err)
+			}
+			setData(user, data)
+			return nil
+		})
+		if retryErr != nil {
+			time.Sleep(2 * time.Second)
+			return diag.FromErr(retryErr)
+		}
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		setData(user, data)
 	}
 	return diags
 }
@@ -121,12 +164,35 @@ func resourceUserDelete(ctx context.Context, data *schema.ResourceData, i interf
 	var diags diag.Diagnostics
 	apiClient := i.(*client.Client)
 	Email := data.Id()
-	user, err := apiClient.DeleteItem(Email)
+	var err error
+	retryErr := resource.Retry(2*time.Minute, func() *resource.RetryError {
+		_, err := apiClient.DeleteItem(Email)
+		if err != nil {
+			if apiClient.IsRetry(err) {
+				return resource.RetryableError(err)
+			}
+			return resource.NonRetryableError(err)
+		}
+		return nil
+	})
+	if retryErr != nil {
+		time.Sleep(2 * time.Second)
+		return diag.FromErr(retryErr)
+	}
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	if user.ID == "" {
-		data.SetId("")
-	}
+	data.SetId("")
 	return diags
+}
+
+func resourceUserImporter(data *schema.ResourceData, i interface{}) ([]*schema.ResourceData, error) {
+	apiClient := i.(*client.Client)
+	Email := data.Id()
+	user, err := apiClient.GetItem(Email)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching user. Make sure the user exists: %s ", err)
+	}
+	setData(user, data)
+	return []*schema.ResourceData{data}, nil
 }

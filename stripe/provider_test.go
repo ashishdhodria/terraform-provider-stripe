@@ -11,7 +11,7 @@ var testAccProviders map[string]*schema.Provider
 var testAccProvider *schema.Provider
 
 func init() {
-	token := ""
+	token := "[SECRET_KEY]"
 	os.Setenv("STRIPE_TOKEN", token)
 	testAccProvider = Provider()
 	testAccProviders = map[string]*schema.Provider{

@@ -8,20 +8,21 @@ terraform {
 }
 
 provider "stripe" {
-  token = ""
+  secretkey = "[SECRET_KEY]"
 }
 
+
 data "stripe_user" "user" {
-  email = ""
+  email = "[EMAIL]"
 }
 
 output "user" {
   value = data.stripe_user.user
 }
 
-resource "stripe_user" "user1" {
-  email = ""
-  first_name = ""
-  last_name = ""
-}
 
+resource "stripe_user" "user1" {
+  email = "[EMAIL]"
+  first_name = "[FIRST_NAME]"
+  last_name = "[LAST_NAME]"
+}
