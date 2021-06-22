@@ -12,7 +12,7 @@ var testAccProvider *schema.Provider
 
 func init() {
 	token := "[SECRET_KEY]"
-	os.Setenv("STRIPE_TOKEN", token)
+	os.Setenv("STRIPE_SECRETKEY", token)
 	testAccProvider = Provider()
 	testAccProviders = map[string]*schema.Provider{
 		"stripe": testAccProvider,
@@ -29,7 +29,7 @@ func TestProvider_impl(t *testing.T) {
 
 func testAccPreCheck(t *testing.T) {
 	t.Log("called")
-	if v := os.Getenv("STRIPE_TOKEN"); v == "" {
+	if v := os.Getenv("STRIPE_SECRETKEY"); v == "" {
 		t.Fatal("token must be set for acceptance tests")
 	}
 

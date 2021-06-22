@@ -71,7 +71,7 @@ func TestClient_NewItem(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.testName, func(t *testing.T) {
-			client := NewClient(os.Getenv("STRIPE_TOKEN"))
+			client := NewClient(os.Getenv("STRIPE_SECRETKEY"))
 			user, err := client.NewItem(&tc.newItem)
 			if tc.expectErr {
 				assert.Error(t, err)
@@ -115,7 +115,7 @@ func TestClient_GetItem(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.testName, func(t *testing.T) {
-			client := NewClient(os.Getenv("STRIPE_TOKEN"))
+			client := NewClient(os.Getenv("STRIPE_SECRETKEY"))
 			user, err := client.GetItem(tc.id)
 			if tc.expectErr {
 				assert.Error(t, err)
@@ -170,7 +170,7 @@ func TestClient_UpdateItem(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.testName, func(t *testing.T) {
-			client := NewClient(os.Getenv("STRIPE_TOKEN"))
+			client := NewClient(os.Getenv("STRIPE_SECRETKEY"))
 			_, err := client.UpdateItem(&tc.updatedUser, tc.id)
 			if tc.expectErr {
 				assert.Error(t, err)
@@ -207,7 +207,7 @@ func TestClient_DeleteItem(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.testName, func(t *testing.T) {
-			client := NewClient(os.Getenv("STRIPE_TOKEN"))
+			client := NewClient(os.Getenv("STRIPE_SECRETKEY"))
 			_, err := client.DeleteItem(tc.id)
 			if tc.expectErr {
 				assert.Error(t, err)
