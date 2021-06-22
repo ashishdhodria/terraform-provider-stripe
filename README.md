@@ -10,13 +10,14 @@ This terraform provider allows to perform Create ,Read ,Update, Delete and Impor
 * [Terraform](https://www.terraform.io/downloads.html) 0.13.x <br/>
 * [Stripe](https://stripe.com/docs/api) Developers account 
 
+## Application Account
 
-## Setup Stripe Account
- :heavy_exclamation_mark:  [IMPORTANT] : This provider can be successfully tested on any Stripe developer account. <br><br>
-
+### Setup
 1. Create a Stripe account. (https://dashboard.stripe.com/register)<br>
 2. Sign in to the stripe account (https://dashboard.stripe.com/login)<br>
-3. Go to the Get your API keys.<br>
+
+### API Authentication
+Go to the Get your API keys.<br>
 This app will provide us with the Secret Key which will be needed to configure our provider and make request. <br>
 
 ## Building The Provider
