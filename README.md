@@ -27,7 +27,6 @@ go mod init terraform-provider-stripe
 go mod tidy
 go mod vendor
 ```
-4. Run `go mod vendor` to create a vendor directory that contains all the provider's dependencies. <br>
 
 ## Managing terraform plugins
 *For Windows:*
