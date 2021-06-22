@@ -87,12 +87,12 @@ terraform {
 }
 
 provider "stripe" {
-  secretkey = "[Secret Key]"
+  secretkey = _REPLACE_STRIPE_USER_SECRETKEY"
 }
 
 
 data "stripe_user" "user" {
-  email = "[EMAIL]"
+  email = user@domain.com"
 }
 
 output "user" {
@@ -100,9 +100,9 @@ output "user" {
 }
 
 resource "stripe_user" "user1" {
-  email = "[EMAIL]"
-  first_name = "[FIRST NAME]"
-  last_name = "[LAST_NAME]"
+  email = "user@domain.com"
+  first_name = "User_First_Name"
+  last_name = "User_Last_Name"
 }
 ```
 ## Argument Reference
