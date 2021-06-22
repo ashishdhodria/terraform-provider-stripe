@@ -22,8 +22,8 @@ This app will provide us with the Secret Key which will be needed to configure o
 ## Building The Provider
 1. Clone the repository, add all the dependencies and create a vendor directory that contains all dependencies. For this, run the following commands: <br>
  ```golang
-cd terraform-provider-expensify
-go mod init terraform-provider-expensify
+cd terraform-provider-stripe
+go mod init terraform-provider-stripe
 go mod tidy
 go mod vendor
 ```
