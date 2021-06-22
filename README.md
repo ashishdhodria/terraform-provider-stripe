@@ -6,7 +6,7 @@ This terraform provider allows to perform Create ,Read ,Update, Delete and Impor
 
 ## Requirements
 
-* [Go](https://golang.org/doc/install) 1.16 <br>
+* [Go](https://golang.org/doc/install) 1.16 (To build the provider plugin)<br>
 * [Terraform](https://www.terraform.io/downloads.html) 0.13.x <br/>
 * [Stripe](https://stripe.com/docs/api) Developers account 
 
@@ -55,35 +55,32 @@ Otherwise you can manually move the file from current directory to destination d
 2. move binary `~/.terraform.d/plugins/[architecture name]/`
 
 
-## Run the Terraform provider
+## Working with terraform
 
-#### Create User
+### Basic Terraform Commands
+1. `terraform init` - To initialize a working directory containing Terraform configuration files.
+2. `terraform plan` - To create an execution plan. Displays the changes to be done.
+3. `terraform apply` - To execute the actions proposed in a Terraform plan. Apply the changes.
+
+### Create User
 1. Add the user email, first name, last name in the respective field in `main.tf`
 2. Initialize the terraform provider `terraform init`
 3. Check the changes applicable using `terraform plan` and apply using `terraform apply`
 4. You will see that a user has been successfully created.
 
-#### Update the user
+### Update the user
 Update the data of the user in the `main.tf` file and apply using `terraform apply`
 
-#### Read the User Data
+### Read the User Data
 Add data and output blocks in the `main.tf` file and run `terraform plan` to read user data.
 
-#### Delete the user
+### Delete the user
 Delete the resource block of the particular user from `main.tf` file and run `terraform apply`.
 
-#### Import a User Data
+### Import a User Data
 1. Write manually a resource configuration block for the User in `main.tf`, to which the imported object will be mapped.
 2. Run the command `terraform import stripe_user.user1 [EMAIL_ID]`
 3. Check for the attributes in the `.tfstate` file and fill them accordingly in resource block.
-
-
-### Testing the Provider
-1. Navigate to the test file directory.
-2. Run command `go test` . This command will give combined test result for the execution or errors if any failure occur.
-3. If you want to see test result of each test function individually while running test in a single go, run command `go test -v`
-4. To check test cover run `go test -cover`
-
 
 ## Example Usage
 ```terraform
@@ -115,3 +112,9 @@ resource "stripe_user" "user1" {
   last_name = "[LAST_NAME]"
 }
 ```
+## Argument Reference
+
+* `secretkey`(Required,string)     - The stripe secret Key from created application
+* `first_name`(Required,string) - First name of the User.
+* `last_name`(Required,string)  - Last Name of the User.
+* `email`(Required,string)         - Email of the user.
