@@ -19,14 +19,13 @@ This terraform provider allows to perform Create ,Read ,Update, Delete and Impor
 3. Go to the Get your API keys.<br>
 This app will provide us with the Secret Key which will be needed to configure our provider and make request. <br>
 
-
-## Initialise Stripe Provider in local machine 
-1. Clone the repository  to $GOPATH/src/github.com/stripe/terraform-provider-stripe <br>
-2. Add the Refresh Secret Key generted in Stripe App to respective fields in `main.tf` <br>
-3. Run the following command :
+## Building The Provider
+1. Clone the repository, add all the dependencies and create a vendor directory that contains all dependencies. For this, run the following commands: <br>
  ```golang
-go mod init terraform-provider-stripe
+cd terraform-provider-expensify
+go mod init terraform-provider-expensify
 go mod tidy
+go mod vendor
 ```
 4. Run `go mod vendor` to create a vendor directory that contains all the provider's dependencies. <br>
 
