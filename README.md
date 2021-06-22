@@ -1,6 +1,3 @@
-
-# Terraform Stripe Provider
-
 This terraform provider allows to perform Create ,Read ,Update, Delete and Import stripe User(s). 
 
 
