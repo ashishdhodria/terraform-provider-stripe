@@ -47,7 +47,7 @@ mkdir -p %APPDATA%/terraform.d/plugins/hashicorp.com/edu/stripe/0.2.0/windows_am
 
 ### Application Credential Integration in terraform
 1. Add `terraform` block and `provider` block as shown in [example usage](#example-usage).
-2. Get a pair of credentials: secretkey
+2. Get the credentials: secretkey
 3. Assign the above credentials to the respective field in the `provider` block.
 
 ### Basic Terraform Commands
