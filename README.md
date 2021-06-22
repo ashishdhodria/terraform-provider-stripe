@@ -46,13 +46,6 @@ mkdir -p %APPDATA%/terraform.d/plugins/hashicorp.com/edu/stripe/0.2.0/windows_am
  
 3. Manually move the file from current directory to destination directory (`%APPDATA%\terraform.d\plugins\hashicorp.com\edu\stripe\0.2.0\windows_amd64`).<br>
 
-
-[OR]
-
-1. Download required binaries <br>
-2. move binary `~/.terraform.d/plugins/[architecture name]/`
-
-
 ## Working with terraform
 
 ### Basic Terraform Commands
