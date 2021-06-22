@@ -30,23 +30,21 @@ go mod tidy
 ```
 4. Run `go mod vendor` to create a vendor directory that contains all the provider's dependencies. <br>
 
-## Installation
-1. Run the following command to create a vendor subdirectory which will comprise of  all provider dependencies. <br>
-```
-~/.terraform.d/plugins/${host_name}/${namespace}/${type}/${version}/${target}
-``` 
+## Managing terraform plugins
+*For Windows:*
+1. Run the following command to create a vendor sub-directory (`%APPDATA%/terraform.d/plugins/${host_name}/${namespace}/${type}/${version}/${OS_ARCH}`) which will consist of all terraform plugins. <br> 
 Command: 
 ```bash
-mkdir -p ~/.terraform.d/plugins/hashicorp.com/edu/stripe/0.2.0/[OS_ARCH]
+mkdir -p %APPDATA%/terraform.d/plugins/hashicorp.com/edu/stripe/0.2.0/windows_amd64
 ```
-For eg. `mkdir -p ~/.terraform.d/plugins/hashicorp.com/edu/stripe/0.2.0/windows_amd64`<br>
-
-2. Run `go build -o terraform-provider-stripe.exe`. This will save the binary (`.exe`) file in the main/root directory. <br>
-3. Run this command to move this binary file to appropriate location.
+2. Run `go build -o terraform-provider-stripe.exe` to generate the binary in present working directory. <br>
+3. Run this command to move this binary file to the appropriate location.
  ```
- move terraform-provider-stripe.exe %APPDATA%\terraform.d\plugins\hashicorp.com\edu\stripe\0.2.0\[OS_ARCH]
+ move terraform-provider-stripe.exe %APPDATA%\terraform.d\plugins\hashicorp.com\edu\stripe\0.2.0\windows_amd64
  ``` 
-Otherwise you can manually move the file from current directory to destination directory.<br>
+<p align="center">[OR]</p>
+ 
+3. Manually move the file from current directory to destination directory (`%APPDATA%\terraform.d\plugins\hashicorp.com\edu\stripe\0.2.0\windows_amd64`).<br>
 
 
 [OR]
