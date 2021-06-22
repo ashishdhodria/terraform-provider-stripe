@@ -1,4 +1,4 @@
-This terraform provider allows to perform Create ,Read ,Update, Delete and Import stripe User(s). 
+This terraform provider allows to perform Create ,Read ,Update, Delete and Import stripe Users. 
 
 
 ## Requirements
