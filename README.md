@@ -44,6 +44,12 @@ mkdir -p %APPDATA%/terraform.d/plugins/hashicorp.com/edu/stripe/0.2.0/windows_am
 
 ## Working with terraform
 
+
+### Application Credential Integration in terraform
+1. Add `terraform` block and `provider` block as shown in [example usage](#example-usage).
+2. Get a pair of credentials: secretkey
+3. Assign the above credentials to the respective field in the `provider` block.
+
 ### Basic Terraform Commands
 1. `terraform init` - To initialize a working directory containing Terraform configuration files.
 2. `terraform plan` - To create an execution plan. Displays the changes to be done.
@@ -69,7 +75,7 @@ Delete the resource block of the particular user from `main.tf` file and run `te
 2. Run the command `terraform import stripe_user.user1 [EMAIL_ID]`
 3. Check for the attributes in the `.tfstate` file and fill them accordingly in resource block.
 
-## Example Usage
+## Example Usage<a id="example-usage"></a>
 ```terraform
 terraform {
   required_providers{
