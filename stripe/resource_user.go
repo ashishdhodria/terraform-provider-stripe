@@ -3,6 +3,7 @@ package stripe
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strings"
 	"terraform-provider-stripe/client"
 	"time"
@@ -14,6 +15,16 @@ import (
 	"github.com/stripe/stripe-go/v72"
 )
 
+func validateEmail(v interface{}, k string) (warns []string, errs []error) {
+	value := v.(string)
+	var emailRegex = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+	if !(emailRegex.MatchString(value)) {
+		errs = append(errs, fmt.Errorf("Expected EmailId is not valid %s", k))
+		return warns, errs
+	}
+	return
+}
+
 func resourceUser() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceUserCreate,
@@ -21,17 +32,36 @@ func resourceUser() *schema.Resource {
 		UpdateContext: resourceUserUpdate,
 		DeleteContext: resourceUserDelete,
 		Schema: map[string]*schema.Schema{
+			"object": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"balance": &schema.Schema{
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
+			"created": &schema.Schema{
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
 			"email": &schema.Schema{
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: validateEmail,
+			},
+			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"first_name": &schema.Schema{
+			"description": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Computed: true,
 			},
-			"last_name": &schema.Schema{
+			"phone": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Computed: true,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -40,34 +70,25 @@ func resourceUser() *schema.Resource {
 	}
 }
 
-func setData(user *stripe.Account, data *schema.ResourceData) {
-	data.Set("email", user.Individual.Email)
-	data.Set("first_name", user.Individual.FirstName)
-	data.Set("last_name", user.Individual.LastName)
+func setData(user *stripe.Customer, data *schema.ResourceData) {
+	data.Set("object", user.Object)
+	data.Set("balance", user.Balance)
+	data.Set("created", user.Created)
+	data.Set("email", user.Email)
+	data.Set("name", user.Name)
+	data.Set("description", user.Description)
+	data.Set("phone", user.Phone)
 	data.SetId(user.Email)
 }
 
 func resourceUserCreate(ctx context.Context, data *schema.ResourceData, i interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 	apiClient := i.(*client.Client)
-	params := &stripe.AccountParams{
-		Capabilities: &stripe.AccountCapabilitiesParams{
-			CardPayments: &stripe.AccountCapabilitiesCardPaymentsParams{
-				Requested: stripe.Bool(true),
-			},
-			Transfers: &stripe.AccountCapabilitiesTransfersParams{
-				Requested: stripe.Bool(true),
-			},
-		},
-		Country:      stripe.String("IN"),
-		Email:        stripe.String(data.Get("email").(string)),
-		Type:         stripe.String("custom"),
-		BusinessType: stripe.String("individual"),
-		Individual: &stripe.PersonParams{
-			Email:     stripe.String(data.Get("email").(string)),
-			FirstName: stripe.String(data.Get("first_name").(string)),
-			LastName:  stripe.String(data.Get("last_name").(string)),
-		},
+	params := &stripe.CustomerParams{
+		Email:       stripe.String(data.Get("email").(string)),
+		Name:        stripe.String(data.Get("name").(string)),
+		Description: stripe.String(data.Get("description").(string)),
+		Phone:       stripe.String(data.Get("phone").(string)),
 	}
 
 	var err error
@@ -122,11 +143,10 @@ func resourceUserUpdate(ctx context.Context, data *schema.ResourceData, i interf
 	var diags diag.Diagnostics
 	apiClient := i.(*client.Client)
 	Email := data.Id()
-	params := &stripe.AccountParams{
-		Individual: &stripe.PersonParams{
-			FirstName: stripe.String(data.Get("first_name").(string)),
-			LastName:  stripe.String(data.Get("last_name").(string)),
-		},
+	params := &stripe.CustomerParams{
+		Name:        stripe.String(data.Get("name").(string)),
+		Description: stripe.String(data.Get("description").(string)),
+		Phone:       stripe.String(data.Get("phone").(string)),
 	}
 	if data.HasChange("email") {
 		diags = append(diags, diag.Diagnostic{
@@ -136,7 +156,7 @@ func resourceUserUpdate(ctx context.Context, data *schema.ResourceData, i interf
 		})
 		return diags
 	}
-	if data.HasChanges("first_name") || data.HasChange("last_name") {
+	if data.HasChanges("name") || data.HasChanges("description") || data.HasChanges("phone") {
 		var err error
 		retryErr := resource.Retry(2*time.Minute, func() *resource.RetryError {
 			user, err := apiClient.UpdateItem(params, Email)

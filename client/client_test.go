@@ -12,66 +12,35 @@ import (
 func TestClient_NewItem(t *testing.T) {
 	testCases := []struct {
 		testName     string
-		newItem      stripe.AccountParams
+		newItem      stripe.CustomerParams
 		id           string
 		expectedResp *UserInfo
 		expectErr    bool
 	}{
 		{
 			testName: "user created successfully",
-			newItem: stripe.AccountParams{
-				Email:        stripe.String("madhurdhodria@gmail.com"),
-				Country:      stripe.String("IN"),
-				Type:         stripe.String("custom"),
-				BusinessType: stripe.String("individual"),
-				Capabilities: &stripe.AccountCapabilitiesParams{
-					CardPayments: &stripe.AccountCapabilitiesCardPaymentsParams{
-						Requested: stripe.Bool(true),
-					},
-					Transfers: &stripe.AccountCapabilitiesTransfersParams{
-						Requested: stripe.Bool(true),
-					},
-				},
-				Individual: &stripe.PersonParams{
-					Email:     stripe.String("madhurdhodria@gmail.com"),
-					FirstName: stripe.String("madhur"),
-					LastName:  stripe.String("dhodria"),
-				},
+			newItem: stripe.CustomerParams{
+				Email: stripe.String("madhurdhodria@gmail.com"),
+				Name:  stripe.String("madhur dhodria"),
 			},
 			expectedResp: &UserInfo{
-				Email:     "madhurdhodria@gmail.com",
-				FirstName: "madhur",
-				LastName:  "dhodria",
+				Email: "madhurdhodria@gmail.com",
+				Name:  "madhur dhodria",
 			},
 			expectErr: false,
 		},
 		{
 			testName: "user already exists",
-			newItem: stripe.AccountParams{
-				Email:        stripe.String("ashishdhodria1999@gmail.com"),
-				Country:      stripe.String("IN"),
-				Type:         stripe.String("custom"),
-				BusinessType: stripe.String("individual"),
-				Capabilities: &stripe.AccountCapabilitiesParams{
-					CardPayments: &stripe.AccountCapabilitiesCardPaymentsParams{
-						Requested: stripe.Bool(true),
-					},
-					Transfers: &stripe.AccountCapabilitiesTransfersParams{
-						Requested: stripe.Bool(true),
-					},
-				},
-				Individual: &stripe.PersonParams{
-					Email:     stripe.String("ashishdhodria1999@gmail.com"),
-					FirstName: stripe.String("ashish"),
-					LastName:  stripe.String("dhodria"),
-				},
+			newItem: stripe.CustomerParams{
+				Email: stripe.String("ashishdhodria1999@gmail.com"),
+				Name:  stripe.String("ashish dhodria"),
 			},
 			expectErr: true,
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.testName, func(t *testing.T) {
-			client := NewClient(os.Getenv("STRIPE_SECRETKEY"))
+			client := NewClient(os.Getenv("STRIPE_TOKEN"))
 			user, err := client.NewItem(&tc.newItem)
 			if tc.expectErr {
 				assert.Error(t, err)
@@ -79,9 +48,8 @@ func TestClient_NewItem(t *testing.T) {
 			}
 			log.Println("ID: ", user.ID)
 			userInfo := &UserInfo{
-				Email:     user.Email,
-				FirstName: user.Individual.FirstName,
-				LastName:  user.Individual.LastName,
+				Email: user.Email,
+				Name:  user.Name,
 			}
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedResp, userInfo)
@@ -101,9 +69,8 @@ func TestClient_GetItem(t *testing.T) {
 			id:        "madhurdhodria@gmail.com",
 			expectErr: false,
 			expectedResp: &UserInfo{
-				Email:     "madhurdhodria@gmail.com",
-				FirstName: "madhur",
-				LastName:  "dhodria",
+				Email: "madhurdhodria@gmail.com",
+				Name:  "madhur dhodria",
 			},
 		},
 		{
@@ -115,16 +82,15 @@ func TestClient_GetItem(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.testName, func(t *testing.T) {
-			client := NewClient(os.Getenv("STRIPE_SECRETKEY"))
+			client := NewClient(os.Getenv("STRIPE_TOKEN"))
 			user, err := client.GetItem(tc.id)
 			if tc.expectErr {
 				assert.Error(t, err)
 				return
 			}
 			userInfo := &UserInfo{
-				Email:     user.Email,
-				FirstName: user.Individual.FirstName,
-				LastName:  user.Individual.LastName,
+				Email: user.Email,
+				Name:  user.Name,
 			}
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedResp, userInfo)
@@ -135,7 +101,7 @@ func TestClient_GetItem(t *testing.T) {
 func TestClient_UpdateItem(t *testing.T) {
 	testCases := []struct {
 		testName     string
-		updatedUser  stripe.AccountParams
+		updatedUser  stripe.CustomerParams
 		expectedResp *UserInfo
 		id           string
 		expectErr    bool
@@ -143,34 +109,27 @@ func TestClient_UpdateItem(t *testing.T) {
 		{
 			testName: "user exists",
 			id:       "madhurdhodria@gmail.com",
-			updatedUser: stripe.AccountParams{
-				Individual: &stripe.PersonParams{
-					FirstName: stripe.String("Tinku"),
-					LastName:  stripe.String("Malav"),
-				},
+			updatedUser: stripe.CustomerParams{
+				Name: stripe.String("Tinku Malav"),
 			},
 			expectedResp: &UserInfo{
-				Email:     "madhurdhodria@gmail.com",
-				FirstName: "Tinku",
-				LastName:  "Malav",
+				Email: "madhurdhodria@gmail.com",
+				Name:  "Tinku Malav",
 			},
 			expectErr: false,
 		},
 		{
 			testName: "user does not exist",
 			id:       "ashishdhodria@gmail.com",
-			updatedUser: stripe.AccountParams{
-				Individual: &stripe.PersonParams{
-					FirstName: stripe.String("ashish"),
-					LastName:  stripe.String("dhodria"),
-				},
+			updatedUser: stripe.CustomerParams{
+				Name: stripe.String("ashish dhodria"),
 			},
 			expectErr: true,
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.testName, func(t *testing.T) {
-			client := NewClient(os.Getenv("STRIPE_SECRETKEY"))
+			client := NewClient(os.Getenv("STRIPE_TOKEN"))
 			_, err := client.UpdateItem(&tc.updatedUser, tc.id)
 			if tc.expectErr {
 				assert.Error(t, err)
@@ -179,9 +138,8 @@ func TestClient_UpdateItem(t *testing.T) {
 			user, err := client.GetItem(tc.id)
 			assert.NoError(t, err)
 			userInfo := &UserInfo{
-				Email:     user.Email,
-				FirstName: user.Individual.FirstName,
-				LastName:  user.Individual.LastName,
+				Email: user.Email,
+				Name:  user.Name,
 			}
 			assert.Equal(t, tc.expectedResp, userInfo)
 		})
@@ -207,7 +165,7 @@ func TestClient_DeleteItem(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.testName, func(t *testing.T) {
-			client := NewClient(os.Getenv("STRIPE_SECRETKEY"))
+			client := NewClient(os.Getenv("STRIPE_TOKEN"))
 			_, err := client.DeleteItem(tc.id)
 			if tc.expectErr {
 				assert.Error(t, err)

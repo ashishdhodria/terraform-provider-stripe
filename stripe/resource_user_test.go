@@ -21,8 +21,7 @@ func TestAccItem_Basic(t *testing.T) {
 			{
 				Config: testAccCheckItemBasic(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("stripe_user.user", "first_name", "ashish"),
-					resource.TestCheckResourceAttr("stripe_user.user", "last_name", "dhodria"),
+					resource.TestCheckResourceAttr("stripe_user.user", "name", "ashish dhodria"),
 					resource.TestCheckResourceAttr("stripe_user.user", "email", "ashishdhodria27@gmail.com"),
 				),
 			},
@@ -58,16 +57,14 @@ func TestAccItem_Update(t *testing.T) {
 			{
 				Config: testAccCheckItemUpdatePre(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("stripe_user.user_update", "first_name", "ashish"),
-					resource.TestCheckResourceAttr("stripe_user.user_update", "last_name", "dhodria"),
+					resource.TestCheckResourceAttr("stripe_user.user_update", "name", "ashish dhodria"),
 					resource.TestCheckResourceAttr("stripe_user.user_update", "email", "ashishdhodria27@gmail.com"),
 				),
 			},
 			{
 				Config: testAccCheckItemUpdatePost(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("stripe_user.user_update", "first_name", "ashu"),
-					resource.TestCheckResourceAttr("stripe_user.user_update", "last_name", "kumar"),
+					resource.TestCheckResourceAttr("stripe_user.user_update", "name", "ashu kumar"),
 					resource.TestCheckResourceAttr("stripe_user.user_update", "email", "ashishdhodria27@gmail.com"),
 				),
 			},
@@ -78,8 +75,7 @@ func TestAccItem_Update(t *testing.T) {
 func testAccCheckItemBasic() string {
 	return fmt.Sprintf(`
 resource "stripe_user" "user" {
-	first_name = "ashish"
-	last_name  = "dhodria"
+	name = "ashish dhodria"
 	email      = "ashishdhodria27@gmail.com"
 }
 `)
@@ -88,8 +84,7 @@ resource "stripe_user" "user" {
 func testAccCheckItemUpdatePre() string {
 	return fmt.Sprintf(`
 resource "stripe_user" "user_update" {
-	   first_name = "ashish"
-	   last_name  = "dhodria"
+	   name = "ashish dhodria"
 	   email      = "ashishdhodria27@gmail.com"
 }
 `)
@@ -98,9 +93,8 @@ resource "stripe_user" "user_update" {
 func testAccCheckItemUpdatePost() string {
 	return fmt.Sprintf(`
 resource "stripe_user" "user_update" {
-	first_name = "ashu"
-	last_name  = "kumar"
-	email      = "ashishdhodria27@gmail.com"
+	name = "ashu kumar"
+	email   = "ashishdhodria27@gmail.com"
 }
 `)
 }

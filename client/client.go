@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/stripe/stripe-go/v72"
-	"github.com/stripe/stripe-go/v72/account"
+	"github.com/stripe/stripe-go/v72/customer"
 )
 
 type Client struct {
@@ -14,9 +14,8 @@ type Client struct {
 }
 
 type UserInfo struct {
-	Email     string `json:"email"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	Email string `json:"email"`
+	Name  string `json:"name"`
 }
 
 func NewClient(token string) *Client {
@@ -41,11 +40,11 @@ func ShowError(err error) string {
 	return fmt.Sprintln("Status Ok!")
 }
 
-func (c *Client) NewItem(params *stripe.AccountParams) (*stripe.Account, error) {
+func (c *Client) NewItem(params *stripe.CustomerParams) (*stripe.Customer, error) {
 	stripe.Key = c.authToken
 	Id := c.GetUserId(*params.Email)
 	if len(Id) == 0 {
-		user, err := account.New(params)
+		user, err := customer.New(params)
 		if err != nil {
 			log.Printf("[Create Error]: %s", ShowError(err))
 			return nil, err
@@ -55,16 +54,13 @@ func (c *Client) NewItem(params *stripe.AccountParams) (*stripe.Account, error) 
 	return nil, fmt.Errorf("user already exists")
 }
 
-func (c *Client) GetItem(Email string) (*stripe.Account, error) {
+func (c *Client) GetItem(Email string) (*stripe.Customer, error) {
 	stripe.Key = c.authToken
 	Id := c.GetUserId(Email)
 	if len(Id) == 0 {
 		return nil, fmt.Errorf("user does not exist")
 	}
-	user, err := account.GetByID(
-		Id,
-		nil,
-	)
+	user, err := customer.Get(Id, nil)
 	if err != nil {
 		log.Printf("[Read Error]: %s", ShowError(err))
 		return nil, err
@@ -72,13 +68,13 @@ func (c *Client) GetItem(Email string) (*stripe.Account, error) {
 	return user, err
 }
 
-func (c *Client) UpdateItem(params *stripe.AccountParams, Email string) (*stripe.Account, error) {
+func (c *Client) UpdateItem(params *stripe.CustomerParams, Email string) (*stripe.Customer, error) {
 	stripe.Key = c.authToken
 	Id := c.GetUserId(Email)
 	if len(Id) == 0 {
 		return nil, fmt.Errorf("user does not exist")
 	}
-	user, err := account.Update(
+	user, err := customer.Update(
 		Id,
 		params,
 	)
@@ -89,13 +85,13 @@ func (c *Client) UpdateItem(params *stripe.AccountParams, Email string) (*stripe
 	return user, err
 }
 
-func (c *Client) DeleteItem(Email string) (*stripe.Account, error) {
+func (c *Client) DeleteItem(Email string) (*stripe.Customer, error) {
 	stripe.Key = c.authToken
 	Id := c.GetUserId(Email)
 	if len(Id) == 0 {
 		return nil, fmt.Errorf("user does not exist")
 	}
-	user, err := account.Del(Id, nil)
+	user, err := customer.Del(Id, nil)
 	if err != nil {
 		log.Printf("[Delete Error]: %s", ShowError(err))
 		return nil, err
@@ -116,10 +112,10 @@ func (c *Client) IsRetry(err error) bool {
 
 func (c *Client) GetUserId(Email string) string {
 	stripe.Key = c.authToken
-	params := &stripe.AccountListParams{}
-	i := account.List(params)
+	params := &stripe.CustomerListParams{}
+	i := customer.List(params)
 	for i.Next() {
-		a := i.Account()
+		a := i.Customer()
 		if a.Email == Email {
 			return a.ID
 		}

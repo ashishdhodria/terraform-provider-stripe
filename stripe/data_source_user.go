@@ -13,15 +13,31 @@ func dataSourceUser() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceUserRead,
 		Schema: map[string]*schema.Schema{
+			"object": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"balance": &schema.Schema{
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
+			"created": &schema.Schema{
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
 			"email": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"first_name": &schema.Schema{
+			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"last_name": &schema.Schema{
+			"description": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"phone": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -37,9 +53,13 @@ func dataSourceUserRead(ctx context.Context, data *schema.ResourceData, i interf
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	data.Set("email", user.Individual.Email)
-	data.Set("first_name", user.Individual.FirstName)
-	data.Set("last_name", user.Individual.LastName)
+	data.Set("object", user.Object)
+	data.Set("balance", user.Balance)
+	data.Set("created", user.Created)
+	data.Set("email", user.Email)
+	data.Set("name", user.Name)
+	data.Set("description", user.Description)
+	data.Set("phone", user.Phone)
 	data.SetId(user.Email)
 	return diags
 }

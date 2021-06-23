@@ -22,8 +22,7 @@ func TestAccUserDataSource_basic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckUserDataExists("data.stripe_user.user"),
 					resource.TestCheckResourceAttr("data.stripe_user.user", "email", "ashishdhodria1999@gmail.com"),
-					resource.TestCheckResourceAttr("data.stripe_user.user", "first_name", "ashish"),
-					resource.TestCheckResourceAttr("data.stripe_user.user", "last_name", "dhodria"),
+					resource.TestCheckResourceAttr("data.stripe_user.user", "name", "ashish dhodria"),
 				),
 			},
 		},
