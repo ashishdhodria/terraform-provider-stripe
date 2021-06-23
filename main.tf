@@ -23,6 +23,5 @@ output "user" {
 
 resource "stripe_user" "user1" {
   email = "[EMAIL]"
-  first_name = "[FIRST_NAME]"
-  last_name = "[LAST_NAME]"
+  name = "[NAME]"
 }
