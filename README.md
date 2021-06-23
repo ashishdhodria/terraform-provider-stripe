@@ -14,7 +14,7 @@ This terraform provider allows to perform Create ,Read ,Update, Delete and Impor
 2. Sign in to the stripe account (https://dashboard.stripe.com/login)<br>
 
 ### API Authentication
-Go to the Get your API keys.<br>
+Go to the Developers and then get secret key.<br>
 This app will provide us with the Secret Key which will be needed to configure our provider and make request. <br>
 
 ## Building The Provider
@@ -56,7 +56,7 @@ mkdir -p %APPDATA%/terraform.d/plugins/hashicorp.com/edu/stripe/0.2.0/windows_am
 3. `terraform apply` - To execute the actions proposed in a Terraform plan. Apply the changes.
 
 ### Create User
-1. Add the user email, first name, last name in the respective field in `resource` block as shown in [example usage](#example-usage).
+1. Add the user email, name in the respective field in `resource` block as shown in [example usage](#example-usage).
 2. Initialize the terraform provider `terraform init`
 3. Check the changes applicable using `terraform plan` and apply using `terraform apply`
 4. You will see that a user has been successfully created.
@@ -101,13 +101,11 @@ output "user" {
 
 resource "stripe_user" "user1" {
   email = "user@domain.com"
-  first_name = "User_First_Name"
-  last_name = "User_Last_Name"
+  name = "User_Name"
 }
 ```
 ## Argument Reference
 
 * `secretkey`(Required,string)     - The stripe secret Key from created application
-* `first_name`(Required,string) - First name of the User.
-* `last_name`(Required,string)  - Last Name of the User.
+* `name`(Required,string) - Name of the User.
 * `email`(Required,string)         - Email of the user.
