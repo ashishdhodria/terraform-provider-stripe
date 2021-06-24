@@ -51,7 +51,8 @@ func resourceUser() *schema.Resource {
 			},
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Computed: true,
 			},
 			"description": &schema.Schema{
 				Type:     schema.TypeString,
@@ -60,6 +61,16 @@ func resourceUser() *schema.Resource {
 			},
 			"phone": &schema.Schema{
 				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"invoice_prefix": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"next_invoice_sequence": &schema.Schema{
+				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
 			},
@@ -78,6 +89,8 @@ func setData(user *stripe.Customer, data *schema.ResourceData) {
 	data.Set("name", user.Name)
 	data.Set("description", user.Description)
 	data.Set("phone", user.Phone)
+	data.Set("invoice_prefix", user.InvoicePrefix)
+	data.Set("next_invoice_sequence", user.NextInvoiceSequence)
 	data.SetId(user.Email)
 }
 
