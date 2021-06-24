@@ -14,7 +14,7 @@ This terraform provider allows to perform Create ,Read ,Update, Delete and Impor
 2. Sign in to the stripe account (https://dashboard.stripe.com/login)<br>
 
 ### API Authentication
-Go to the Developers and then get secret key.<br>
+Go to the Developers -> API Keys -> Standard Keys and select Secret Key.<br>
 This app will provide us with the Secret Key which will be needed to configure our provider and make request. <br>
 
 ## Building The Provider
