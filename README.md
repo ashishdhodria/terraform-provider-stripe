@@ -56,7 +56,7 @@ mkdir -p %APPDATA%/terraform.d/plugins/hashicorp.com/edu/stripe/0.2.0/windows_am
 3. `terraform apply` - To execute the actions proposed in a Terraform plan. Apply the changes.
 
 ### Create User
-1. Add the user email, name in the respective field in `resource` block as shown in [example usage](#example-usage).
+1. Add the user data in the respective field in `resource` block as shown in [example usage](#example-usage).
 2. Initialize the terraform provider `terraform init`
 3. Check the changes applicable using `terraform plan` and apply using `terraform apply`
 4. You will see that a user has been successfully created.
@@ -102,10 +102,15 @@ output "user" {
 resource "stripe_user" "user1" {
   email = "user@domain.com"
   name = "User_Name"
+  description = "User_Description"
+  phone = "User_Phone_No"
 }
 ```
 ## Argument Reference
 
 * `secretkey`(Required,string)     - The stripe secret Key from created application
-* `name`(Required,string) - Name of the User.
 * `email`(Required,string)         - Email of the user.
+* `name`(Optional,string) - Name of the User.
+*  `description`(Optional,string) - Description of the User.
+*  `phone`(Optional,string) - Phone No of the User.
+
