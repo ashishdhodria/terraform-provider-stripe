@@ -68,7 +68,7 @@ Update the data of the user in `resource` block as show in [example usage](#exam
 Add data and output blocks as shown in the [example usage](#example-usage) and run `terraform plan` to read user data.
 
 ### Delete the user
-Delete the resource block of the particular user from `main.tf` file and run `terraform apply`.
+Delete the resource block of the particular user and run `terraform apply`.
 
 ### Import a User Data
 1. Write manually a `resource` configuration block for the user as shown in [example usage](#example-usage). Imported user will be mapped to this block.
@@ -108,9 +108,9 @@ resource "stripe_user" "user1" {
 ```
 ## Argument Reference
 
-* `secretkey`(Required,string)     - The stripe secret Key from created application
-* `email`(Required,string)         - Email of the user.
-* `name`(Optional,string) - Name of the User.
-*  `description`(Optional,string) - Description of the User.
-*  `phone`(Optional,string) - Phone No of the User.
+* `secretkey`(required, string)     - The secretkey for stripe user. This may also be set via the "STRIPE_TOKEN" environment variable.
+* `email`(required, string)         - Email of the user.
+* `name`(optional, string) - Name of the User.
+*  `description`(optional, string) - Description of the User.
+*  `phone`(optional, string) - Phone No of the User.
 
