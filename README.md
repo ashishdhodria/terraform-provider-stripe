@@ -92,7 +92,7 @@ provider "stripe" {
 
 
 data "stripe_user" "user" {
-  email = user@domain.com"
+  email = "user@domain.com"
 }
 
 output "user" {
